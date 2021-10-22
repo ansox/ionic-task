@@ -7,6 +7,8 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { AuthProvider } from 'src/app/core/services/auth.types';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +17,7 @@ import {
 })
 export class LoginPage implements OnInit {
   authForm: FormGroup;
+  authProvider = AuthProvider;
   configs = {
     isSignIn: true,
     action: 'Login',
@@ -26,14 +29,23 @@ export class LoginPage implements OnInit {
     Validators.minLength(3),
   ]);
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private authService: AuthService, private fb: FormBuilder) {}
 
   ngOnInit() {
     this.createForm();
   }
 
-  onSubmit(): void {
-    console.log(this.authForm.value);
+  async onSubmit(provider: AuthProvider): Promise<void> {
+    try {
+      const credentials = await this.authService.authenticate({
+        isSignIn: this.configs.isSignIn,
+        user: this.authForm.value,
+        provider,
+      });
+      console.log(credentials);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   changeAuthAction(): void {
