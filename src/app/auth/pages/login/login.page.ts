@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { AuthProvider } from 'src/app/core/services/auth.types';
+import { OverlayService } from 'src/app/core/services/overlay.service';
 
 @Component({
   selector: 'app-login',
@@ -29,13 +30,18 @@ export class LoginPage implements OnInit {
     Validators.minLength(3),
   ]);
 
-  constructor(private authService: AuthService, private fb: FormBuilder) {}
+  constructor(
+    private authService: AuthService,
+    private fb: FormBuilder,
+    private overlayService: OverlayService
+  ) {}
 
   ngOnInit() {
     this.createForm();
   }
 
   async onSubmit(provider: AuthProvider): Promise<void> {
+    const loading = await this.overlayService.loading();
     try {
       const credentials = await this.authService.authenticate({
         isSignIn: this.configs.isSignIn,
@@ -45,6 +51,11 @@ export class LoginPage implements OnInit {
       console.log(credentials);
     } catch (error) {
       console.log(error);
+      this.overlayService.toast({
+        message: error.message,
+      });
+    } finally {
+      loading.dismiss();
     }
   }
 
