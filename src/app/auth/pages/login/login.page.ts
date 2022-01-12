@@ -7,6 +7,8 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { AuthProvider } from 'src/app/core/services/auth.types';
 import { OverlayService } from 'src/app/core/services/overlay.service';
@@ -33,7 +35,9 @@ export class LoginPage implements OnInit {
   constructor(
     private authService: AuthService,
     private fb: FormBuilder,
-    private overlayService: OverlayService
+    private overlayService: OverlayService,
+    private navCtrl: NavController,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -48,9 +52,11 @@ export class LoginPage implements OnInit {
         user: this.authForm.value,
         provider,
       });
-      console.log(credentials);
+
+      this.navCtrl.navigateForward(
+        this.route.snapshot.queryParamMap.get('redirect') || '/tasks'
+      );
     } catch (error) {
-      console.log(error);
       this.overlayService.toast({
         message: error.message,
       });
