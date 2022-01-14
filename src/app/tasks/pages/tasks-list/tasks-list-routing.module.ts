@@ -6,8 +6,8 @@ import { TasksListPage } from './tasks-list.page';
 const routes: Routes = [
   {
     path: '',
-    component: TasksListPage
-  }
+    component: TasksListPage,
+  },
 ];
 
 @NgModule({
